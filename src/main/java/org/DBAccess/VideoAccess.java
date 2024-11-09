@@ -303,4 +303,59 @@ public class VideoAccess {
         }
     }
     
+    public List<Video> dbConsultarVideosByUser(int userId) {
+        PreparedStatement pst = null;
+        List<Video> videos = new ArrayList<>();
+        
+        System.out.println("---dbConsultarVideosPorUsuario---"); 
+        
+        try {
+            String query = "SELECT * FROM Video WHERE video_user = ?";
+            pst = conexion.prepareStatement(query);
+            pst.setInt(1, userId);
+            
+            ResultSet rset = pst.executeQuery();
+            
+            System.out.println(query);
+            System.out.println(" ");
+            
+            while (rset.next()) {
+                Video video = new Video();
+                video.setId(rset.getLong(1));
+                video.setDuration(rset.getString(2));
+                video.setTitle(rset.getString(3));
+                video.setUploadDate(rset.getTimestamp(4));
+                video.setDescription(rset.getString(5));
+                video.setGenre(rset.getString(6));
+                video.setLikes(rset.getInt(7));
+                video.setAgeRestricted(rset.getBoolean(8));
+                
+                // Convertir array de SQL a ArrayList<String> para countryRestricted
+                Array sqlArray = rset.getArray(9);
+                if (sqlArray != null) {
+                    String[] countries = (String[]) sqlArray.getArray();
+                    video.setCountryRestricted(new ArrayList<>(Arrays.asList(countries)));
+                }
+                
+                videos.add(video);
+                System.out.println("---------------------------------------");
+            }
+            
+            rset.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (pst != null) {
+                try {
+                    pst.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        return videos;
+    }
+
+    
 }

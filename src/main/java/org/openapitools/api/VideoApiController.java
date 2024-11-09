@@ -39,215 +39,259 @@ import javax.annotation.Generated;
 @RequestMapping("${openapi.tubeFlixGestionDeVideosOpenAPI30.base-path:}")
 public class VideoApiController implements VideoApi {
 
-    private final NativeWebRequest request;
+	private final NativeWebRequest request;
 
-    @Autowired
-    public VideoApiController(NativeWebRequest request) {
-        this.request = request;
-    }
+	@Autowired
+	public VideoApiController(NativeWebRequest request) {
+		this.request = request;
+	}
 
-    @Override
-    public Optional<NativeWebRequest> getRequest() {
-        return Optional.ofNullable(request);
-    }
-    
-    @Override
-    public ResponseEntity<Video> createVideo(@Valid @RequestBody Video video) {
-        System.out.println("---createVideo API---");
-        
-        try {
-        	VideoAccess cliente = new VideoAccess();
-        	System.out.println("Iniciando programa");
-        	if(!cliente.dbConectar()) {
-        		System.out.println("Conexion fallida");
-        	}
-        	
-        	cliente.dbAddVideo(video);
-        	
-        	if(!cliente.dbDesconectar()) {
-        		System.out.println("Desconexión fallida");
-        	}
-            return new ResponseEntity<>(video, HttpStatus.CREATED); // Retorna el objeto video y estado 201 (Created)
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @Override
-    public ResponseEntity<Video> getVideoByid(@PathVariable("id") String id) {
-        System.out.println("---getVideoByid API---");
-        
-        try {
-            int videoId = Integer.parseInt(id); // Convierte el ID a entero
-            if (videoId <= 0) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Devuelve 400 si el ID es inválido
-            }
+	@Override
+	public Optional<NativeWebRequest> getRequest() {
+		return Optional.ofNullable(request);
+	}
 
-            VideoAccess cliente = new VideoAccess();
-            System.out.println("Iniciando programa");
+	@Override
+	public ResponseEntity<Video> createVideo(@Valid @RequestBody Video video) {
+		System.out.println("---createVideo API---");
 
-            // Conectar a la base de datos
-            if (!cliente.dbConectar()) {
-                System.out.println("Conexion fallida");
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+		try {
+			VideoAccess cliente = new VideoAccess();
+			System.out.println("Iniciando programa");
+			if(!cliente.dbConectar()) {
+				System.out.println("Conexion fallida");
+			}
 
-            // Consultar el video
-            Video video = cliente.dbConsultarVideoPorId(videoId); // Asume que dbConsultarVideoPorId devuelve un objeto Video
-            if (!cliente.dbDesconectar()) {
-                System.out.println("Desconexión fallida");
-            }
+			cliente.dbAddVideo(video);
 
-            // Verificar si el video se encontró
-            if (video != null) {
-                return new ResponseEntity<>(video, HttpStatus.OK); // Devuelve 200 si el video se encuentra
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Devuelve 404 si el video no se encuentra
-            }
+			if(!cliente.dbDesconectar()) {
+				System.out.println("Desconexión fallida");
+			}
+			return new ResponseEntity<>(video, HttpStatus.CREATED); // Retorna el objeto video y estado 201 (Created)
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
-        } catch (NumberFormatException e) {
-            System.out.println("ID no válido: " + id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Devuelve 400 si el ID no es numérico
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Devuelve 500 en caso de error del servidor
-        }
-    }
+	@Override
+	public ResponseEntity<Video> getVideoByid(@PathVariable("id") String id) {
+		System.out.println("---getVideoByid API---");
 
-    @Override
-    public ResponseEntity<Void> updateVideo(@PathVariable("id") String id, @Valid @RequestBody(required = false) Video video) {
-        System.out.println("---updateVideo API---");
+		try {
+			int videoId = Integer.parseInt(id); // Convierte el ID a entero
+			if (videoId <= 0) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Devuelve 400 si el ID es inválido
+			}
 
-        try {
-            int videoId = Integer.parseInt(id); // Convertir el ID a entero
-            if (videoId <= 0) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
-            }
+			VideoAccess cliente = new VideoAccess();
+			System.out.println("Iniciando programa");
 
-            if (video == null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el objeto video no está presente
-            }
+			// Conectar a la base de datos
+			if (!cliente.dbConectar()) {
+				System.out.println("Conexion fallida");
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 
-            VideoAccess cliente = new VideoAccess();
-            System.out.println("Iniciando actualización de video");
+			// Consultar el video
+			Video video = cliente.dbConsultarVideoPorId(videoId); // Asume que dbConsultarVideoPorId devuelve un objeto Video
+			if (!cliente.dbDesconectar()) {
+				System.out.println("Desconexión fallida");
+			}
 
-            // Conectar a la base de datos
-            if (!cliente.dbConectar()) {
-                System.out.println("Conexión fallida");
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+			// Verificar si el video se encontró
+			if (video != null) {
+				return new ResponseEntity<>(video, HttpStatus.OK); // Devuelve 200 si el video se encuentra
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Devuelve 404 si el video no se encuentra
+			}
 
-            // Asignar el ID al objeto video para actualizar el registro correspondiente
-            video.setId((long) videoId);
+		} catch (NumberFormatException e) {
+			System.out.println("ID no válido: " + id);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Devuelve 400 si el ID no es numérico
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Devuelve 500 en caso de error del servidor
+		}
+	}
 
-            // Intentar actualizar el video
-            boolean actualizado = cliente.dbActualizarVideo(video);
+	@Override
+	public ResponseEntity<Void> updateVideo(@PathVariable("id") String id, @Valid @RequestBody(required = false) Video video) {
+		System.out.println("---updateVideo API---");
 
-            if (!cliente.dbDesconectar()) {
-                System.out.println("Desconexión fallida");
-            }
+		try {
+			int videoId = Integer.parseInt(id); // Convertir el ID a entero
+			if (videoId <= 0) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
+			}
 
-            if (actualizado) {
-                return new ResponseEntity<>(HttpStatus.OK); // 200 si la actualización fue exitosa
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 si el video no se encontró
-            }
+			if (video == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el objeto video no está presente
+			}
 
-        } catch (NumberFormatException e) {
-            System.out.println("ID no válido: " + id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
-        }
-    }
-    
-    @Override
-    public ResponseEntity<Void> addComment(Comments comment
-        ) {
-    	System.out.println("---addComment API---");
-    	
-        if (comment == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el comment video no está presente
-        }
+			VideoAccess cliente = new VideoAccess();
+			System.out.println("Iniciando actualización de video");
 
-        try {
-            int videoId = comment.getVideo();
-            if (videoId <= 0) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
-            }
+			// Conectar a la base de datos
+			if (!cliente.dbConectar()) {
+				System.out.println("Conexión fallida");
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 
-            CommentAccess cliente = new CommentAccess();
-            System.out.println("Iniciando inserción de comentario");
+			// Asignar el ID al objeto video para actualizar el registro correspondiente
+			video.setId((long) videoId);
 
-            // Conectar a la base de datos
-            if (!cliente.dbConectar()) {
-                System.out.println("Conexión fallida");
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            
+			// Intentar actualizar el video
+			boolean actualizado = cliente.dbActualizarVideo(video);
 
-            // Intentar actualizar el video
-            cliente.dbAddComment(comment);
+			if (!cliente.dbDesconectar()) {
+				System.out.println("Desconexión fallida");
+			}
 
-            if (!cliente.dbDesconectar()) {
-                System.out.println("Desconexión fallida");
-            }
-            
-                return new ResponseEntity<>(HttpStatus.OK); // 200 si la actualización fue exitosa
+			if (actualizado) {
+				return new ResponseEntity<>(HttpStatus.OK); // 200 si la actualización fue exitosa
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 si el video no se encontró
+			}
+
+		} catch (NumberFormatException e) {
+			System.out.println("ID no válido: " + id);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
+		}
+	}
+
+	@Override
+	public ResponseEntity<Void> addComment(Comments comment
+			) {
+		System.out.println("---addComment API---");
+
+		if (comment == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el comment video no está presente
+		}
+
+		try {
+			int videoId = comment.getVideo();
+			if (videoId <= 0) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
+			}
+
+			CommentAccess cliente = new CommentAccess();
+			System.out.println("Iniciando inserción de comentario");
+
+			// Conectar a la base de datos
+			if (!cliente.dbConectar()) {
+				System.out.println("Conexión fallida");
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 
 
-        } catch (NumberFormatException e) {
-            System.out.println("ID no válido: " + comment.getVideo());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
-        }
-            }
-    
-    @Override
-    public ResponseEntity<List<Comments>> getCommentsForVideo(@PathVariable("id") int id) {
-    	System.out.println("---getCommentsForVideo API---");
-        List<Comments> commentsList = new ArrayList<>();
+			// Intentar actualizar el video
+			cliente.dbAddComment(comment);
 
-        try {
-            int videoId = id; // Convertir el ID a entero
-            if (videoId <= 0) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
-            }
+			if (!cliente.dbDesconectar()) {
+				System.out.println("Desconexión fallida");
+			}
 
-            CommentAccess cliente = new CommentAccess();
-            System.out.println("Iniciando busqueda comentarios");
+			return new ResponseEntity<>(HttpStatus.OK); // 200 si la actualización fue exitosa
 
-            // Conectar a la base de datos
-            if (!cliente.dbConectar()) {
-                System.out.println("Conexión fallida");
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
 
-            // Asignar el ID al objeto video para actualizar el registro correspondiente
+		} catch (NumberFormatException e) {
+			System.out.println("ID no válido: " + comment.getVideo());
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
+		}
+	}
 
-            // Intentar actualizar el video
-            commentsList = cliente.dbGetAllCommentsFromVideo(id);
+	@Override
+	public ResponseEntity<List<Comments>> getCommentsForVideo(@PathVariable("id") int id) {
+		System.out.println("---getCommentsForVideo API---");
+		List<Comments> commentsList = new ArrayList<>();
 
-            if (!cliente.dbDesconectar()) {
-                System.out.println("Desconexión fallida");
-            }
-            
-            if (commentsList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 si no hay comentarios
-            }
-            return new ResponseEntity<>(commentsList,HttpStatus.OK); // 200 si la actualización fue exitosa
+		try {
+			int videoId = id; // Convertir el ID a entero
+			if (videoId <= 0) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
+			}
 
-        } catch (NumberFormatException e) {
-            System.out.println("ID no válido: " + id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
-        }
-        }
+			CommentAccess cliente = new CommentAccess();
+			System.out.println("Iniciando busqueda comentarios");
+
+			// Conectar a la base de datos
+			if (!cliente.dbConectar()) {
+				System.out.println("Conexión fallida");
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			// Asignar el ID al objeto video para actualizar el registro correspondiente
+
+			// Intentar actualizar el video
+			commentsList = cliente.dbGetAllCommentsFromVideo(id);
+
+			if (!cliente.dbDesconectar()) {
+				System.out.println("Desconexión fallida");
+			}
+
+			if (commentsList.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 si no hay comentarios
+			}
+			return new ResponseEntity<>(commentsList,HttpStatus.OK); // 200 si la actualización fue exitosa
+
+		} catch (NumberFormatException e) {
+			System.out.println("ID no válido: " + id);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
+		}
+	}
+	
+	@Override
+	public ResponseEntity<List<Video>> getVideosbyUser(int id) {
+		
+		System.out.println("---getVideosbyUser API---");
+		List<Video> videosList = new ArrayList<>();
+
+		try {
+			int videoId = id; // Convertir el ID a entero
+			if (videoId <= 0) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
+			}
+
+			VideoAccess cliente = new VideoAccess();
+			System.out.println("Iniciando busqueda comentarios");
+
+			// Conectar a la base de datos
+			if (!cliente.dbConectar()) {
+				System.out.println("Conexión fallida");
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			// Asignar el ID al objeto video para actualizar el registro correspondiente
+
+			// Intentar actualizar el video
+			videosList = cliente.dbConsultarVideosByUser(id);
+
+			if (!cliente.dbDesconectar()) {
+				System.out.println("Desconexión fallida");
+			}
+
+			if (videosList.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 si no hay comentarios
+			}
+			return new ResponseEntity<>(videosList,HttpStatus.OK); // 200 si la actualización fue exitosa
+
+		} catch (NumberFormatException e) {
+			System.out.println("ID no válido: " + id);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID no es numérico
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
+		}
+	}
 
 }

@@ -306,4 +306,37 @@ public interface VideoApi {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
     
+    
+    /**
+     * GET /users/{id}/videos/ : Obtener una lista de videos de un usuario.
+     *
+     * @param id El id del usuario (required)
+     * @return Operación exitosa (status code 200)
+     *         or Invalid resource id supplied (status code 400)
+     *         or Resource not found (status code 404)
+     */
+    @Operation(
+        operationId = "getVideosByUser",
+        summary = "Obtener una lista de entidades asociadas a un recurso",
+        description = "Muestra todas las entidades asociadas a un recurso específico.",
+        tags = { "resource" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "400", description = "Invalid resource id"),
+            @ApiResponse(responseCode = "404", description = "Resource not found")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/users/{id}/videos/",
+        produces = { "application/json" }
+    )
+     default ResponseEntity<List<Video>> getVideosbyUser(
+        @Parameter(name = "id", description = "El id del usuario de los videos a obtener", required = true, in = ParameterIn.PATH) 
+        @PathVariable("id") int id
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    
 }
