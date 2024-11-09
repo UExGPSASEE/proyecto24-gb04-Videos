@@ -5,6 +5,7 @@
  */
 package org.openapitools.api;
 
+import org.openapitools.model.Comments;
 import org.openapitools.model.GetDataVideoById200Response;
 import org.openapitools.model.Video;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
@@ -241,5 +242,68 @@ public interface VideoApi {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
+    
+    /**
+     * POST /video/comment/{id} : Añadir comentario al video
+     * Solo puede utilizarse si el usuario ha iniciado sesión.
+     *
+     * @param id el id del video al que se añade el comentario (required)
+     * @param comment el comentario a añadir (required)
+     * @return operacion exitosa (status code 201)
+     *         or Invalid video id supplied (status code 400)
+     *         or video not found (status code 404)
+     */
+    @Operation(
+        operationId = "addCommentToVideo",
+        summary = "Añadir comentario al video",
+        description = "Solo puede utilizarse si el usuario ha iniciado sesión.",
+        tags = { "video" },
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Comentario añadido exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Invalid video id supplied"),
+            @ApiResponse(responseCode = "404", description = "video not found")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/video/comment",
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<Void> addComment(
+    		@Parameter(name = "comment", description = "Comentario a añadir al video", required = true, in = ParameterIn.DEFAULT) @Valid @RequestBody Comments comment
+    ) {
+    	return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        }
 
+    /**
+     * GET /video/comments/{id} : Obtener los comentarios de un video
+     * Muestra todos los comentarios asociados a un video específico.
+     *
+     * @param id El id del video del que se desean obtener los comentarios (required)
+     * @return operacion exitosa (status code 200)
+     *         or Invalid video id supplied (status code 400)
+     *         or video not found (status code 404)
+     */
+    @Operation(
+        operationId = "getCommentsForVideo",
+        summary = "Obtener los comentarios de un video",
+        description = "Muestra todos los comentarios asociados a un video específico.",
+        tags = { "video" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "400", description = "Invalid video id"),
+            @ApiResponse(responseCode = "404", description = "Video not found")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/video/{id}/comments",
+        produces = { "application/json" }
+    )
+    default ResponseEntity<List<Comments>> getCommentsForVideo(
+        @Parameter(name = "id", description = "El id del video del que se desean obtener los comentarios", required = true, in = ParameterIn.PATH) @PathVariable("id") int id
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+    
 }
