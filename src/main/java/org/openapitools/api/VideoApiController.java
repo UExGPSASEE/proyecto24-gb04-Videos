@@ -249,7 +249,7 @@ public class VideoApiController implements VideoApi {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
 		}
 	}
-	
+
 	@Override
 	public ResponseEntity<List<Video>> getVideosbyUser(int id) {
 		
