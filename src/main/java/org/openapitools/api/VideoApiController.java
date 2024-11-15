@@ -3,6 +3,7 @@ package org.openapitools.api;
 import org.DBAccess.*;
 import org.openapitools.model.Comments;
 import org.openapitools.model.GetDataVideoById200Response;
+import org.openapitools.model.LikeRequest;
 import org.openapitools.model.Video;
 
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +52,13 @@ public class VideoApiController implements VideoApi {
 	public Optional<NativeWebRequest> getRequest() {
 		return Optional.ofNullable(request);
 	}
+	
+    // Endpoint de prueba
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "health";
+    }
+    
 
 	@Override
 	public ResponseEntity<Video> createVideo(@Valid @RequestBody Video video) {
@@ -292,6 +301,55 @@ public class VideoApiController implements VideoApi {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
 		}
+	}
+	
+	@Override
+	public ResponseEntity<Video> likeVideo(LikeRequest request) {
+	    System.out.println("---likeVideo API---");
+	    Video videoLiked;
+
+	    try {
+	        // Validar ID de video
+	        if (request.getVideotitle().isEmpty() || request.getUserId() == null) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 si el ID es inválido
+	        }
+
+	        // Instancia para acceder a la base de datos
+	        VideoAccess cliente = new VideoAccess();
+
+	        // Conectar a la base de datos
+	        if (!cliente.dbConectar()) {
+	            System.out.println("Conexión fallida");
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 si no se pudo conectar
+	        }
+
+	        // Buscar el video por ID
+	        videoLiked = cliente.dbConsultarVideoByUserAndTitle(request.getUserId(), request.getVideotitle());
+	        if (videoLiked == null) {
+	            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 si no se encuentra el video
+	        }
+
+	        // Incrementar el contador de likes del video
+	        videoLiked.setLikes(videoLiked.getLikes() + 1);
+	        
+	        // Guardar el like en la base de datos
+	        boolean updated = cliente.dbActualizarVideo(videoLiked);
+	        if (!updated) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 si la actualización falla
+	        }
+
+	        // Desconectar la base de datos
+	        if (!cliente.dbDesconectar()) {
+	            System.out.println("Desconexión fallida");
+	        }
+	        System.out.println("Devolviendo video");
+	        // Devolver el video actualizado con status 200
+	        return new ResponseEntity<>(videoLiked, HttpStatus.OK);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 en caso de error del servidor
+	    }
 	}
 
 }

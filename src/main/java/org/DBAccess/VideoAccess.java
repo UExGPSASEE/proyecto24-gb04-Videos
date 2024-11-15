@@ -356,6 +356,48 @@ public class VideoAccess {
         
         return videos;
     }
+    
+    public Video dbConsultarVideoByUserAndTitle(Long userId, String title) {
+        Video video = null;
+        System.out.println("---dbConsultarVideoByUserAndTitle---");
+
+        String query = "SELECT * FROM Video WHERE video_user = ? AND title = ?";
+
+        try (PreparedStatement pst = conexion.prepareStatement(query)) {
+            pst.setLong(1, userId);
+            pst.setString(2, title);
+
+            try (ResultSet rset = pst.executeQuery()) {
+                if (rset.next()) {  // Si hay un resultado, inicializa el objeto Video
+                    video = new Video();
+                    video.setId(rset.getLong(1));
+                    video.setDuration(rset.getString(2));
+                    video.setTitle(rset.getString(3));
+                    video.setUploadDate(rset.getTimestamp(4));
+                    video.setDescription(rset.getString(5));
+                    video.setGenre(rset.getString(6));
+                    video.setLikes(rset.getInt(7));
+                    video.setAgeRestricted(rset.getBoolean(8));
+                    
+                    // Convertir array de SQL a ArrayList<String> para countryRestricted
+                    Array sqlArray = rset.getArray(9);
+                    if (sqlArray != null) {
+                        String[] countries = (String[]) sqlArray.getArray();
+                        video.setCountryRestricted(new ArrayList<>(Arrays.asList(countries)));
+                    }
+                    System.out.println("Video encontrado: " + video);
+                } else {
+                    System.out.println("No se encontró un video con los criterios especificados.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return video;
+    }
+
+
 
     
 }

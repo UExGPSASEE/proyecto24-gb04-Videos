@@ -7,6 +7,7 @@ package org.openapitools.api;
 
 import org.openapitools.model.Comments;
 import org.openapitools.model.GetDataVideoById200Response;
+import org.openapitools.model.LikeRequest;
 import org.openapitools.model.Video;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -338,5 +339,38 @@ public interface VideoApi {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+    /**
+     * POST /video/like : Da like a un video.
+     *
+     * @param videoId El ID del video a dar like
+     * @param userId El ID del usuario que da like al video
+     * @return Video liked con operación exitosa (status code 200)
+     *         or Invalid video id supplied (status code 400)
+     *         or Video not found (status code 404)
+     */
+    @Operation(
+        operationId = "likeVideo",
+        summary = "Da like a un video",
+        description = "Incrementa el contador de likes de un video y devuelve el video con el contador actualizado.",
+        tags = { "video" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "400", description = "Invalid video id"),
+            @ApiResponse(responseCode = "404", description = "Video not found")
+        }
+    )
+    @PostMapping(
+        value = "/video/like",
+        consumes = { "application/json" },
+        produces = { "application/json" }
+    )
+    default ResponseEntity<Video> likeVideo(
+        @Parameter(name = "request", description = "VideoID and UserID", required = true) 
+        @RequestBody LikeRequest request
+    ) {
+        // Aquí iría la lógica para incrementar el contador de likes del video y 
+        // asociar el like al usuario
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
     
 }
