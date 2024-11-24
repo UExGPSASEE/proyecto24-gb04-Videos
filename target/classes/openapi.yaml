@@ -1,0 +1,271 @@
+openapi: 3.0.3
+info:
+  description: |-
+    Es la descripción del microservicio de Usuarios para la aplicacion de video online.
+    En el se definen las operaciones que se realizarán sobre los usuarios asi como sus propiedades.
+  title: TubeFlix - Gestion de Videos - OpenAPI 3.0
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- description: Operaciones sobre los videos
+  name: video
+paths:
+  /video:
+    post:
+      description: Solo se podra hacer si el usuario ha iniciado sesion.
+      operationId: createVideo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Video'
+        description: Crea un objeto Video
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+          description: operacion exitosa
+      summary: Crea un video
+      tags:
+      - video
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: video
+  /video/preview/{id}:
+    delete:
+      description: Solo se puede hacer si el usuario ha iniciado sesion.
+      operationId: deleteVideo
+      parameters:
+      - description: El id del video a borrar
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: operacion exitosa
+        "400":
+          description: Invalid id supplied
+        "404":
+          description: id not found
+      summary: Borrar video
+      tags:
+      - video
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: video
+    get:
+      description: Muestra los datos de un video en especifico
+      operationId: getDataVideoById
+      parameters:
+      - description: El id por el que se busca. Usar 1 para testing.
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getDataVideoById_200_response'
+          description: operacion exitosa
+        "400":
+          description: Invalid video
+        "404":
+          description: video not found
+      summary: Obtener los datos de un video en especifico
+      tags:
+      - video
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: video
+    put:
+      description: Solo puede utilizarse si el usuario ha iniciado sesion.
+      operationId: updateVideo
+      parameters:
+      - description: el id del video a modificar
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Video'
+        description: Modifica el video en la aplicacion
+      responses:
+        "200":
+          description: operacion exitosa
+        "400":
+          description: Invalid id supplied
+        "404":
+          description: id not found
+      summary: Actualizar video
+      tags:
+      - video
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: video
+  /video/{id}:
+    get:
+      description: ""
+      operationId: getVideoByid
+      parameters:
+      - description: El id por el que se busca. Usar 1 para testing.
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+          description: operacion exitosa
+        "400":
+          description: Invalid id supplied
+        "404":
+          description: id not found
+      summary: Hacer un get del video por su id
+      tags:
+      - video
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: video
+components:
+  schemas:
+    Video:
+      example:
+        duration: duration
+        ageRestricted: true
+        uploadDate: 2000-01-23T04:56:07.000+00:00
+        countryRestricted:
+        - countryRestricted
+        - countryRestricted
+        genre: genre
+        description: description
+        id: 0
+        title: title
+        user: 1
+        likes: 6
+      properties:
+        id:
+          description: ID único del video (clave primaria).
+          format: int64
+          type: integer
+        duration:
+          description: Duración del video en formato HH:MM:SS.
+          type: string
+        title:
+          description: Título del video.
+          type: string
+        uploadDate:
+          description: Fecha y hora de subida del video.
+          format: date-time
+          type: string
+        description:
+          description: Descripción del video.
+          type: string
+        genre:
+          description: Género del video.
+          type: string
+        likes:
+          description: Número de "me gustas" para el video.
+          format: int32
+          type: integer
+        ageRestricted:
+          description: Indica si el contenido está restringido para usuarios mayores
+            de edad.
+          type: boolean
+        countryRestricted:
+          description: Lista de países a los que se restringe el acceso al video.
+          items:
+            type: string
+          type: array
+        user:
+          description: Clave que referencia al usuario que ha subido el video.
+          format: int32
+          type: integer
+      type: object
+    Comments:
+      example:
+        uploadDate: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        video: 1
+        text: text
+        user: 6
+      properties:
+        id:
+          description: ID único del video (clave primaria).
+          format: int64
+          type: integer
+        uploadDate:
+          description: Fecha y hora de subida del comentario.
+          format: date-time
+          type: string
+        user:
+          description: Clave que referencia al usuario que ha realizado el comentario.
+          format: int32
+          type: integer
+        video:
+          description: Clave que referencia al video en el que ha realizado el comentario.
+          format: int32
+          type: integer
+        text:
+          description: Texto del comentario.
+          type: string
+      type: object
+      xml:
+        name: video
+    getDataVideoById_200_response:
+      example:
+        comments:
+          uploadDate: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          video: 1
+          text: text
+          user: 6
+        video:
+          duration: duration
+          ageRestricted: true
+          uploadDate: 2000-01-23T04:56:07.000+00:00
+          countryRestricted:
+          - countryRestricted
+          - countryRestricted
+          genre: genre
+          description: description
+          id: 0
+          title: title
+          user: 1
+          likes: 6
+      properties:
+        video:
+          $ref: '#/components/schemas/Video'
+        comments:
+          $ref: '#/components/schemas/Comments'
+      type: object
